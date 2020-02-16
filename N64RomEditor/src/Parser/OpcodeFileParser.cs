@@ -17,7 +17,7 @@ namespace N64RomEditor.src.Parser
             { "SA", typeof(SaBitField) },
             { "OP", typeof(OpBitField) },
             { "CS", typeof(CsBitField) },
-            { "CO", typeof(CsBitField) },
+            { "CO", typeof(CoBitField) },
             { "RS", typeof(RsBitField) },
             { "RT", typeof(RtBitField) },
             { "RD", typeof(RdBitField) },
@@ -163,7 +163,7 @@ namespace N64RomEditor.src.Parser
             }
             else
             {
-                throw new Exception($"TypeByMnemonic collection does not contain a BitField value for key `{bitField}`");
+                throw new Exception($"`TypeByBitFieldCode` collection does not contain a BitField value for key `{bitField}`");
             }
             return null;
         }
