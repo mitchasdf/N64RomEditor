@@ -52,17 +52,17 @@ namespace N64RomEditor.src.OpcodeMatrix
     {
         public CondBitField(int identifier) : base(4, 1, identifier) { }
     }
-    public class OpBitField : IdentifierBitField
+    public class OpBitField : ParameterBitField
     {
-        public OpBitField(int identifier) : base(5, 1, identifier) { }
+        public OpBitField() : base(5) { }
     }
-    public class CoBitField : IdentifierBitField
+    public class CoBitField : ParameterBitField
     {
-        public CoBitField(int identifier) : base(1, 1, identifier) { }
+        public CoBitField() : base(1) { }
     }
-    public class EsBitField : IdentifierBitField
+    public class EsBitField : ParameterBitField
     {
-        public EsBitField(int identifier) : base(2, 1, identifier) { }
+        public EsBitField() : base(2) { }
     }
     public class ZeroBitField : IdentifierBitField
     {
