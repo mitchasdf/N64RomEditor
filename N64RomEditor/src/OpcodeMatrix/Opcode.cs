@@ -52,7 +52,7 @@ namespace N64RomEditor.src.OpcodeMatrix
         {
             BitMaskAfterShift = mask;
             ShiftAmount = shift;
-            ListId = ListId;
+            ListId = listId;
         }
     }
     public class OpcodeIdentifierFitmentMetas
