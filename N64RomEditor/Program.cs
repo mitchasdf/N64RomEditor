@@ -14,9 +14,11 @@ namespace N64RomEditor
         [STAThread]
         static void Main()
         {
+            // Boiler plate
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            Application.Run(new LauncherForm());
         }
+        
     }
 }
