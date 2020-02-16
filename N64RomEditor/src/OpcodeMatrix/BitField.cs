@@ -52,18 +52,6 @@ namespace N64RomEditor.src.OpcodeMatrix
     {
         public CondBitField(int identifier) : base(4, 1, identifier) { }
     }
-    public class OpBitField : IdentifierBitField
-    {
-        public OpBitField(int identifier) : base(5, 1, identifier) { }
-    }
-    public class CoBitField : IdentifierBitField
-    {
-        public CoBitField(int identifier) : base(1, 1, identifier) { }
-    }
-    public class EsBitField : IdentifierBitField
-    {
-        public EsBitField(int identifier) : base(2, 1, identifier) { }
-    }
     public class ZeroBitField : IdentifierBitField
     {
         public ZeroBitField(int len) : base(len, 3, 0) { }
@@ -145,5 +133,17 @@ namespace N64RomEditor.src.OpcodeMatrix
     public class ModBitField : ParameterBitField
     {
         public ModBitField() : base(4) { }
+    }
+    public class OpBitField : ParameterBitField
+    {
+        public OpBitField() : base(5) { }
+    }
+    public class CoBitField : ParameterBitField
+    {
+        public CoBitField() : base(1) { }
+    }
+    public class EsBitField : ParameterBitField
+    {
+        public EsBitField() : base(2) { }
     }
 }

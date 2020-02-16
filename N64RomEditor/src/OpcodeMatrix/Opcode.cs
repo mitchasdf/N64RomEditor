@@ -19,20 +19,11 @@ namespace N64RomEditor.src.OpcodeMatrix
                         $"All items within the appearance list must also be within the bitFields list.\r\n" +
                         $"Failed [{invalidCount}/{appearance.Count}]");
             }
-            // Matrix.Fit(); todo
+            Matrix.Fit(Opcodes.Count, bitFields, appearance);
             Opcodes.Add(this);
         }
         public static void InstantiateOpcodes()
         {
-            //MIPS3Instructions.ArithmeticInstructions.InstantiateOpcodes();
-            //MIPS3Instructions.ExceptionInstructions.InstantiateOpcodes();
-            //MIPS3Instructions.FloatingPointUnitComparisonInstructions.InstantiateOpcodes();
-            //MIPS3Instructions.FloatingPointUnitInstructions.InstantiateOpcodes();
-            //MIPS3Instructions.JumpAndBranchInstructions.InstantiateOpcodes();
-            //MIPS3Instructions.LoadAndStoreInstructions.InstantiateOpcodes();
-            //MIPS3Instructions.SpecialInstructions.InstantiateOpcodes();
-            //MIPS3Instructions.SystemControlProcessorInstructions.InstantiateOpcodes();
-            List<Opcode> opcodes = Opc
         }
     }
 }
