@@ -4,7 +4,7 @@ using System.IO;
 using System.Reflection;
 using N64RomEditor.src.OpcodeMatrix;
 
-namespace N64RomEditor.src.Parser
+namespace N64RomEditor.src.OpcodeMatrix
 {
     public class OpcodeFileParser
     {

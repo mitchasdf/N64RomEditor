@@ -14,7 +14,7 @@ namespace N64RomEditor
         [STAThread]
         static void Main()
         {
-            
+            //src.OpcodeMatrix.Opcode.InstantiateOpcodes();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());
