@@ -1,4 +1,5 @@
-﻿using System;
+﻿using N64RomEditor.src.Parser;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,13 @@ namespace N64RomEditor.src.OpcodeMatrix
 {
     public class Opcode
     {
-        private static List<Opcode> Opcodes { get; set; } = new List<Opcode>();
+        public static List<Opcode> Opcodes { get; set; } = new List<Opcode>();
+        
+        // just added these to print the data to be sure it was loading correctly
+        public string Name { get; }
+        public List<BitField> BitFields { get; }
+        public List<ParameterBitField> Appearance { get; }
+
         public Opcode(string name, List<BitField> bitFields, List<ParameterBitField> appearance)
         {
             // Check that all items within both BitField arrays are valid
@@ -19,7 +26,12 @@ namespace N64RomEditor.src.OpcodeMatrix
                         $"All items within the appearance list must also be within the bitFields list.\r\n" +
                         $"Failed [{invalidCount}/{appearance.Count}]");
             }
+
             // Matrix.Fit(); todo
+
+            Name = name;
+            BitFields = bitFields;
+            Appearance = appearance;
             Opcodes.Add(this);
         }
         public static void InstantiateOpcodes()
@@ -32,7 +44,8 @@ namespace N64RomEditor.src.OpcodeMatrix
             //MIPS3Instructions.LoadAndStoreInstructions.InstantiateOpcodes();
             //MIPS3Instructions.SpecialInstructions.InstantiateOpcodes();
             //MIPS3Instructions.SystemControlProcessorInstructions.InstantiateOpcodes();
-            List<Opcode> opcodes = Opc
+            //List<Opcode> opcodes = Opc
+            OpcodeFileParser.LoadOpcodesFromFile("opcodes.ini");
         }
     }
 }
