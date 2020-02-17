@@ -54,10 +54,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\OpcodeMatrix\BitField.cs" />
-    <Compile Include="src\OpcodeMatrix\Matrix.cs" />
-    <Compile Include="src\OpcodeMatrix\Opcode.cs" />
-    <Compile Include="src\OpcodeMatrix\OpcodeFileParser.cs" />
+    <Compile Include="src\MIPS3Codec\BitField.cs" />
+    <Compile Include="src\MIPS3Codec\DecodedInstruction.cs" />
+    <Compile Include="src\MIPS3Codec\Decoder.cs" />
+    <Compile Include="src\MIPS3Codec\Matrix.cs" />
+    <Compile Include="src\MIPS3Codec\Opcode.cs" />
+    <Compile Include="src\MIPS3Codec\OpcodeFileParser.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -67,6 +69,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="bin\Release\MIPS3Opcodes.ini" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -76,13 +79,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="bin\Debug\opcodes.ini" />
+    <None Include="bin\Debug\MIPS3Opcodes.ini" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="src\Parser\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

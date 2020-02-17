@@ -1,4 +1,4 @@
-﻿using N64RomEditor.src.OpcodeMatrix;
+﻿using OpcodeMatrixBuilder;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

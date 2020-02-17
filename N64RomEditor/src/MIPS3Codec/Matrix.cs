@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace N64RomEditor.src.OpcodeMatrix
+namespace N64RomEditor.src.MIPS3Codec
 {
     public class Matrix
     {
@@ -13,9 +13,6 @@ namespace N64RomEditor.src.OpcodeMatrix
         public const int MatrixLayerSize = 64;
         public static void Fit(int id, List<BitField> bitFields, List<ParameterBitField> parameters, Opcode opcode)
         {
-            opcode.Appearance = parameters;
-            opcode.BitFields = bitFields;
-            opcode.ListId = id;
             int bitsAddressed = 0;
             int i = 0;
             List<List<OpcodeIdentifierFitmentMetas>> opcodeIdentifierFitmentMetas = new List<List<OpcodeIdentifierFitmentMetas>>();
@@ -33,18 +30,27 @@ namespace N64RomEditor.src.OpcodeMatrix
                         opcode.BitwiseIdentity += identifier << (Opcode.InstructionSizeInBits - (bitsAddressed + bf.Length));
                     opcodeIdentifierFitmentMetas[idbf.Precedence].Add(new OpcodeIdentifierFitmentMetas(identifier, bf.Length, bitsAddressed));
                 }
-                else if (bf.GetType().BaseType == typeof(ParameterBitField))
-                {
-                    int shiftAmount = Opcode.InstructionSizeInBits - (bf.Length + bitsAddressed);
-                    int bitMaskAfterShift = (1 << bf.Length) - 1;
-                    opcode.ParamaterMaskingMetas.Add(new OpcodeParamaterMaskingMetas(bitMaskAfterShift, shiftAmount, bf.ListId));
-                }
-                else
-                    throw new Exception("somethings wrong");
                 bitsAddressed += bf.Length;
             }
             if (bitsAddressed != Opcode.InstructionSizeInBits)
                 throw new Exception($"Instruction {opcode.Name} has {bitsAddressed} bits when Opcode.InstructionSizeInBits is {Opcode.InstructionSizeInBits}.");
+
+            // The parameter unmasking metas should appear in order of the appearance parameters
+            foreach (ParameterBitField pbf in parameters)
+            {
+                bitsAddressed = 0;
+                foreach (BitField bf in bitFields)
+                {
+                    if (bf.GetType() == pbf.GetType())
+                    {
+                        int shiftAmount = Opcode.InstructionSizeInBits - (bf.Length + bitsAddressed);
+                        int bitMaskAfterShift = (1 << bf.Length) - 1;
+                        opcode.ParamaterUnmaskingMetas.Add(new OpcodeParamaterUnmaskingMetas(bitMaskAfterShift, shiftAmount, (ParameterBitField)bf));
+                        break;
+                    }
+                    bitsAddressed += bf.Length;
+                }
+            }
 
             // Take all ZeroBitFields over the length of 6 and split them up into more ZeroBitFields with a max length of 6 each
             // The reason for this is 0b111_111 = 63 = the max length of our defined matrix array layers
@@ -87,6 +93,16 @@ namespace N64RomEditor.src.OpcodeMatrix
                 }
                 if (isFinalElement)
                 {
+                    if (MatrixArray[offsetNewIndex] != 0) // This is bad
+                    {
+                        string errMsg = $"There's been a short while fitting the matrix.\n\n" +
+                                        $"Instruction attempted to fit: {opcode.Name}\n";
+                        if (MatrixArray[offsetNewIndex] < 0)
+                            errMsg += $"Instruction that would've been written over: {Opcode.Opcodes[-MatrixArray[offsetNewIndex]].Name}";
+                        else
+                            errMsg += $"A part of the pathway to 1 more more instructions would've been overwritten.";
+                        throw new Exception(errMsg);
+                    }
                     MatrixArray[offsetNewIndex] = -id;
                     break;
                 }
@@ -98,6 +114,29 @@ namespace N64RomEditor.src.OpcodeMatrix
                 }
                 else
                     offset = MatrixArray[offsetNewIndex];
+            }
+        }
+        public static Opcode FindOpcodeFromByteCode(int fourBytesOfCode)
+        {
+            if (fourBytesOfCode == 0)
+                return Opcode.Opcodes[0];
+            int offset = 0;
+            int value;
+            while (true)
+            {
+                value = MatrixArray[
+                    offset + 
+                    ((fourBytesOfCode >> MatrixArray[offset + 65]) &
+                    MatrixArray[offset + 64])
+                ];
+                if (value > 0)
+                {
+                    offset = value;
+                    continue;
+                }
+                if (value < 0)
+                    return Opcode.Opcodes[-value];
+                return Opcode.Unidentifiable;
             }
         }
     }

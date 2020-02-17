@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using N64RomEditor.src.OpcodeMatrix;
 
-namespace N64RomEditor.src.OpcodeMatrix
+namespace N64RomEditor.src.MIPS3Codec
 {
     public class OpcodeFileParser
     {

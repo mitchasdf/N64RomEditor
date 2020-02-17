@@ -5,12 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace N64RomEditor.src.OpcodeMatrix
+namespace N64RomEditor.src.MIPS3Codec
 {
     public class Opcode
     {
         public const int InstructionSizeInBits = 32;
         public static List<Opcode> Opcodes { get; set; } = new List<Opcode>();
+        public static UnidentifiableOpcode Unidentifiable = new UnidentifiableOpcode();
         public static bool Loaded { get; set; } = false;
 
         public string Name { get; set; } = "";
@@ -18,9 +19,11 @@ namespace N64RomEditor.src.OpcodeMatrix
         public List<ParameterBitField> Appearance { get; set; } = new List<ParameterBitField>();
         public int BitwiseIdentity { get; set; } = 0;
         public int ListId { get; set; } = 0;
-        public List<OpcodeParamaterMaskingMetas> ParamaterMaskingMetas { get; set; } = new List<OpcodeParamaterMaskingMetas>();
+        public List<OpcodeParamaterUnmaskingMetas> ParamaterUnmaskingMetas { get; set; } = new List<OpcodeParamaterUnmaskingMetas>();
         public Opcode(string name, List<BitField> bitFields, List<ParameterBitField> appearance)
         {
+            if (name == "")
+                return;
             // Check that all items within both BitField arrays are valid
             int invalidCount = appearance.Count(x => bitFields.Count(y => y.GetType() == x.GetType()) == 0);
             if (invalidCount > 0)
@@ -29,30 +32,37 @@ namespace N64RomEditor.src.OpcodeMatrix
                         $"All items within the appearance list must also be within the bitFields list.\r\n" +
                         $"Failed [{invalidCount}/{appearance.Count}]");
             }
+            Appearance = appearance;
+            BitFields = bitFields;
+            ListId = Opcodes.Count;
             Name = name;
-            Matrix.Fit(Opcodes.Count, bitFields, appearance, this);
+            if (name != "NOP")
+                Matrix.Fit(Opcodes.Count, bitFields, appearance, this);
             Opcodes.Add(this);
         }
         public static void InstantiateOpcodes()
         {
             if (!Loaded)
             {
-                string filePath = Directory.GetCurrentDirectory() + "\\..\\..\\src\\OpcodeMatrix\\";
-                OpcodeFileParser.LoadOpcodesFromFile("opcodes.ini");
+                OpcodeFileParser.LoadOpcodesFromFile("MIPS3Opcodes.ini");
                 Loaded = true;
             }
         }
     }
-    public class OpcodeParamaterMaskingMetas
+    public class UnidentifiableOpcode : Opcode
     {
-        public int BitMaskAfterShift { get; set; } = 0;
-        public int ShiftAmount { get; set; } = 0;
-        public int ListId { get; set; } = 0;
-        public OpcodeParamaterMaskingMetas(int mask, int shift, int listId)
+        public UnidentifiableOpcode() : base("", new List<BitField>(), new List<ParameterBitField>()) {}
+    }
+    public class OpcodeParamaterUnmaskingMetas
+    {
+        public int BitMaskAfterShift { get; set; }
+        public int ShiftAmount { get; set; }
+        public ParameterBitField Parameter { get; set; }
+        public OpcodeParamaterUnmaskingMetas(int mask, int shift, ParameterBitField param)
         {
             BitMaskAfterShift = mask;
             ShiftAmount = shift;
-            ListId = listId;
+            Parameter = param;
         }
     }
     public class OpcodeIdentifierFitmentMetas
