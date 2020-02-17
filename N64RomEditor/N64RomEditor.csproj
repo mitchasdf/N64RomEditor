@@ -55,7 +55,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\MIPS3Codec\BitField.cs" />
-    <Compile Include="src\MIPS3Codec\DecodedInstruction.cs" />
+    <Compile Include="src\MIPS3Codec\DecodedInstructionHelper.cs" />
     <Compile Include="src\MIPS3Codec\Decoder.cs" />
     <Compile Include="src\MIPS3Codec\Matrix.cs" />
     <Compile Include="src\MIPS3Codec\Opcode.cs" />

@@ -8,15 +8,47 @@ namespace N64RomEditor.src.MIPS3Codec
 {
     public class Matrix
     {
-        private static int Stack = 0;
+        public static int Stack = 0;
         private static int[] MatrixArray = new int[50000];
+        public static bool NOPIsIdentifiedByAllZeroes = false;
         public const int MatrixLayerSize = 64;
         public const int MatrixLayerBitMaskSlot = MatrixLayerSize; // Conveniently
         public const int MatrixLayerShiftAmountSlot = MatrixLayerSize + 1;
         public static void Fit(Opcode opcode, List<BitField> bitFields, List<ParameterBitField> parameters)
         {
-            int bitsAddressed = 0;
+            // Because the way the algorithm works and recognises fields with a value of 0
+            //   in the matrix array to cause it to return the Unidentifiable, a dummy
+            //   DecodedInstructionHelper is created and then automatically added to the list
+            // Point being: nothing important other than NOP should be put in the 0th element
+            //   because 0 will never be recognised as an instruction in the matrix.
+            bool thisIsTheNop = false;
+            if (DecodedInstructionHelper.Instructions.Count == 0)
+            {
+                if (bitFields[0].GetType() == typeof(ZeroBitField))
+                {
+                    if (bitFields[0].Length == Opcode.InstructionSizeInBits)
+                    {
+                        NOPIsIdentifiedByAllZeroes = thisIsTheNop = true;
+                    }
+                }
+                else
+                {
+                    new DecodedInstructionHelper();
+                    opcode.ListId += 1;
+                }
+            }
+            DecodedInstructionHelper decodedInstruction = new DecodedInstructionHelper();
+            decodedInstruction.Appearance = parameters;
+            decodedInstruction.BitFields = bitFields;
+            decodedInstruction.Name = opcode.Name;
+            decodedInstruction.ListId = opcode.ListId;
+            // The NOP should not be fitted if it is comprised of all 0s, because it will
+            //   certainly cause a short in the matrix.
+            // If the NOP is comprised of all 0s, the decoder and encoder will know how to
+            //   handle it based on the NOPIsIdentifiedByAllZeroes switch.
+            if (thisIsTheNop) return;
             int i = 0;
+            int bitsAddressed = 0;
             List<List<OpcodeIdentifierFitmentMetas>> opcodeIdentifierFitmentMetas = new List<List<OpcodeIdentifierFitmentMetas>>();
             for (; i <= BitField.maximumPrecedenceSetting; i++)
                 opcodeIdentifierFitmentMetas.Add(new List<OpcodeIdentifierFitmentMetas>());
@@ -29,7 +61,7 @@ namespace N64RomEditor.src.MIPS3Codec
                     IdentifierBitField idbf = (IdentifierBitField)bf;
                     int identifier = idbf.Identifier;
                     if(!(bf.GetType() == typeof(ZeroBitField)))
-                        opcode.BitwiseIdentity += identifier << (Opcode.InstructionSizeInBits - (bitsAddressed + bf.Length));
+                        decodedInstruction.BitwiseIdentity += identifier << (Opcode.InstructionSizeInBits - (bitsAddressed + bf.Length));
                     opcodeIdentifierFitmentMetas[idbf.Precedence].Add(new OpcodeIdentifierFitmentMetas(identifier, bf.Length, bitsAddressed));
                 }
                 bitsAddressed += bf.Length;
@@ -47,7 +79,7 @@ namespace N64RomEditor.src.MIPS3Codec
                     {
                         int shiftAmount = Opcode.InstructionSizeInBits - (bf.Length + bitsAddressed);
                         int bitMaskAfterShift = (1 << bf.Length) - 1;
-                        opcode.ParamaterUnmaskingMetas.Add(new OpcodeParamaterUnmaskingMetas(bitMaskAfterShift, shiftAmount, (ParameterBitField)bf));
+                        decodedInstruction.ParamaterUnmaskingMetas.Add(new OpcodeParamaterUnmaskingMetas(bitMaskAfterShift, shiftAmount, (ParameterBitField)bf));
                         break;
                     }
                     bitsAddressed += bf.Length;
@@ -100,7 +132,7 @@ namespace N64RomEditor.src.MIPS3Codec
                         string errMsg = $"There's been a short while fitting the matrix.\n\n" +
                                         $"Instruction attempted to fit: {opcode.Name}\n";
                         if (MatrixArray[offsetNewIndex] < 0)
-                            errMsg += $"Instruction that would've been written over: {Opcode.Opcodes[-MatrixArray[offsetNewIndex]].Name}\n";
+                            errMsg += $"Instruction that would've been written over: {DecodedInstructionHelper.Instructions[-MatrixArray[offsetNewIndex]].Name}\n";
                         else
                             errMsg += $"A part of the pathway to 1 more more instructions would've been overwritten.";
                         throw new Exception(errMsg);
@@ -118,10 +150,10 @@ namespace N64RomEditor.src.MIPS3Codec
                     offset = MatrixArray[offsetNewIndex];
             }
         }
-        public static Opcode FindOpcodeFromByteCode(int fourBytesOfCode)
+        public static DecodedInstructionHelper FindOpcodeFromByteCode(int fourBytesOfCode)
         {
             if (fourBytesOfCode == 0)
-                return Opcode.Opcodes[0];
+                return DecodedInstructionHelper.Instructions[0];
             int offset = 0;
             int value;
             while (true)
@@ -137,8 +169,8 @@ namespace N64RomEditor.src.MIPS3Codec
                     continue;
                 }
                 if (value < 0)
-                    return Opcode.Opcodes[-value];
-                return Opcode.Unidentifiable;
+                    return DecodedInstructionHelper.Instructions[-value];
+                return DecodedInstructionHelper.Unidentifiable;
             }
         }
     }
