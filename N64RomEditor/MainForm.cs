@@ -1,4 +1,4 @@
-﻿using OpcodeMatrixBuilder;
+﻿using N64RomEditor.src.MIPS3Codec;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
