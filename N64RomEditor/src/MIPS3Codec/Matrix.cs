@@ -11,7 +11,9 @@ namespace N64RomEditor.src.MIPS3Codec
         private static int Stack = 0;
         private static int[] MatrixArray = new int[50000];
         public const int MatrixLayerSize = 64;
-        public static void Fit(int id, List<BitField> bitFields, List<ParameterBitField> parameters, Opcode opcode)
+        public const int MatrixLayerBitMaskSlot = MatrixLayerSize; // Conveniently
+        public const int MatrixLayerShiftAmountSlot = MatrixLayerSize + 1;
+        public static void Fit(Opcode opcode, List<BitField> bitFields, List<ParameterBitField> parameters)
         {
             int bitsAddressed = 0;
             int i = 0;
@@ -88,8 +90,8 @@ namespace N64RomEditor.src.MIPS3Codec
                 int offsetNewIndex = offset + fitmentMeta.NewTargetMatrixIndex;
                 if (MatrixArray[offset + MatrixLayerSize] == 0)
                 {
-                    MatrixArray[offset + MatrixLayerSize] = bitMask;
-                    MatrixArray[offset + MatrixLayerSize + 1] = shiftAmount;
+                    MatrixArray[offset + MatrixLayerBitMaskSlot] = bitMask;
+                    MatrixArray[offset + MatrixLayerShiftAmountSlot] = shiftAmount;
                 }
                 if (isFinalElement)
                 {
@@ -98,12 +100,12 @@ namespace N64RomEditor.src.MIPS3Codec
                         string errMsg = $"There's been a short while fitting the matrix.\n\n" +
                                         $"Instruction attempted to fit: {opcode.Name}\n";
                         if (MatrixArray[offsetNewIndex] < 0)
-                            errMsg += $"Instruction that would've been written over: {Opcode.Opcodes[-MatrixArray[offsetNewIndex]].Name}";
+                            errMsg += $"Instruction that would've been written over: {Opcode.Opcodes[-MatrixArray[offsetNewIndex]].Name}\n";
                         else
                             errMsg += $"A part of the pathway to 1 more more instructions would've been overwritten.";
                         throw new Exception(errMsg);
                     }
-                    MatrixArray[offsetNewIndex] = -id;
+                    MatrixArray[offsetNewIndex] = -opcode.ListId;
                     break;
                 }
                 if (MatrixArray[offsetNewIndex] == 0)
@@ -126,8 +128,8 @@ namespace N64RomEditor.src.MIPS3Codec
             {
                 value = MatrixArray[
                     offset + 
-                    ((fourBytesOfCode >> MatrixArray[offset + 65]) &
-                    MatrixArray[offset + 64])
+                    ((fourBytesOfCode >> MatrixArray[offset + MatrixLayerShiftAmountSlot]) &
+                    MatrixArray[offset + MatrixLayerBitMaskSlot])
                 ];
                 if (value > 0)
                 {

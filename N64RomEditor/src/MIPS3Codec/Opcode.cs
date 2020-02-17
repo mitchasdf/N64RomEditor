@@ -37,7 +37,7 @@ namespace N64RomEditor.src.MIPS3Codec
             ListId = Opcodes.Count;
             Name = name;
             if (name != "NOP")
-                Matrix.Fit(Opcodes.Count, bitFields, appearance, this);
+                Matrix.Fit(this, bitFields, appearance);
             Opcodes.Add(this);
         }
         public static void InstantiateOpcodes()
