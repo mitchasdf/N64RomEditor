@@ -60,6 +60,7 @@
     <Compile Include="src\MIPS3Codec\Matrix.cs" />
     <Compile Include="src\MIPS3Codec\Opcode.cs" />
     <Compile Include="src\MIPS3Codec\OpcodeFileParser.cs" />
+    <Compile Include="src\MIPS3Codec\RegisterMap.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

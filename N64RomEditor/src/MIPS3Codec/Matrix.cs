@@ -33,15 +33,13 @@ namespace N64RomEditor.src.MIPS3Codec
                 }
                 else
                 {
-                    new DecodedInstructionHelper();
+                    DecodedInstructionHelper.Instructions.Add(null);
                     opcode.ListId += 1;
                 }
             }
-            DecodedInstructionHelper decodedInstruction = new DecodedInstructionHelper();
-            decodedInstruction.Appearance = parameters;
-            decodedInstruction.BitFields = bitFields;
-            decodedInstruction.Name = opcode.Name;
-            decodedInstruction.ListId = opcode.ListId;
+            DecodedInstructionHelper decodedInstruction = new DecodedInstructionHelper(
+                opcode.Name, opcode.ListId, bitFields, parameters
+            );
             // The NOP should not be fitted if it is comprised of all 0s, because it will
             //   certainly cause a short in the matrix.
             // If the NOP is comprised of all 0s, the decoder and encoder will know how to
@@ -153,7 +151,8 @@ namespace N64RomEditor.src.MIPS3Codec
         public static DecodedInstructionHelper FindOpcodeFromByteCode(int fourBytesOfCode)
         {
             if (fourBytesOfCode == 0)
-                return DecodedInstructionHelper.Instructions[0];
+                if (NOPIsIdentifiedByAllZeroes)
+                    return DecodedInstructionHelper.Instructions[0];
             int offset = 0;
             int value;
             while (true)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace N64RomEditor.src.MIPS3Codec
 {
     public class BitField
@@ -16,6 +17,7 @@ namespace N64RomEditor.src.MIPS3Codec
         }
     }
 
+    // Identifier BitFields
     public class IdentifierBitField : BitField
     {
         public int Precedence { get; set; }
@@ -30,20 +32,9 @@ namespace N64RomEditor.src.MIPS3Codec
             Identifier = identifier;
         }
     }
-
-    public class ParameterBitField : BitField
-    {
-        public ParameterBitField(int len) : base(len) { }
-        public bool Is(ParameterBitField pbf)
-        {
-            return GetType() == pbf.GetType();
-        }
-    }
-
-    // Identifier BitFields
     public class OpcodeBitField : IdentifierBitField
     {
-        public OpcodeBitField(int identifier) : base(6, 0, identifier) {  }
+        public OpcodeBitField(int identifier) : base(6, 0, identifier) { }
     }
     public class ExOpcodeBitField : IdentifierBitField
     {
@@ -67,92 +58,149 @@ namespace N64RomEditor.src.MIPS3Codec
     }
 
     // Parameter BitFields
-    public class OffsetBitField : ParameterBitField
+    public class ParameterBitField : BitField
     {
-        public OffsetBitField() : base(16) { }
+        public ParameterBitField(int len) : base(len) { }
+        public bool Is(ParameterBitField pbf)
+        {
+            return GetType() == pbf.GetType();
+        }
     }
-    public class VOffsetBitField : ParameterBitField
+
+    public class RegisterBitField : ParameterBitField
     {
-        public VOffsetBitField() : base(6) { }
+        public int RegisterMapEntry { get; set; }
+        public RegisterBitField(int len) : base(len) 
+        {
+            Type thisType = GetType();
+            if (thisType == typeof(MainRegisterBitField)) RegisterMapEntry = 0;
+            if (thisType == typeof(FloatRegisterBitField)) RegisterMapEntry = 1;
+            if (thisType == typeof(VectorRegisterBitField)) RegisterMapEntry = 2;
+            if (thisType == typeof(CP0RegisterBitField)) RegisterMapEntry = 3;
+        }
     }
-    public class AddressBitField : ParameterBitField
+
+    // Main Register Parameter BitFields
+    public class MainRegisterBitField : RegisterBitField
     {
-        public AddressBitField() : base(26) { }
+        public MainRegisterBitField(int len) : base(len) { }
     }
-    public class ImmediateBitField : ParameterBitField
-    {
-        public ImmediateBitField() : base(16) { }
-    }
-    public class BaseBitField : ParameterBitField
+    public class BaseBitField : MainRegisterBitField
     {
         public BaseBitField() : base(5) { }
     }
-    public class RtBitField : ParameterBitField
+    public class RtBitField : MainRegisterBitField
     {
         public RtBitField() : base(5) { }
     }
-    public class RdBitField : ParameterBitField
+    public class RdBitField : MainRegisterBitField
     {
         public RdBitField() : base(5) { }
     }
-    public class RsBitField : ParameterBitField
+    public class RsBitField : MainRegisterBitField
     {
         public RsBitField() : base(5) { }
     }
-    public class FtBitField : ParameterBitField
+
+    // Float Register Parameter BitFields
+    public class FloatRegisterBitField : RegisterBitField
+    {
+        public FloatRegisterBitField(int len) : base(len) { }
+    }
+    public class FtBitField : FloatRegisterBitField
     {
         public FtBitField() : base(5) { }
     }
-    public class FdBitField : ParameterBitField
+    public class FdBitField : FloatRegisterBitField
     {
         public FdBitField() : base(5) { }
     }
-    public class FsBitField : ParameterBitField
+    public class FsBitField : FloatRegisterBitField
     {
         public FsBitField() : base(5) { }
     }
-    public class CsBitField : ParameterBitField
+
+    // Vector Register Parameter BitFields
+    public class VectorRegisterBitField : RegisterBitField
     {
-        public CsBitField() : base(5) { }
+        public VectorRegisterBitField(int len) : base(len) { }
     }
-    public class SaBitField : ParameterBitField
-    {
-        public SaBitField() : base(5) { }
-    }
-    public class Code10BitField : ParameterBitField
-    {
-        public Code10BitField() : base(10) { }
-    }
-    public class Code20BitField : ParameterBitField
-    {
-        public Code20BitField() : base(20) { }
-    }
-    public class VsBitField : ParameterBitField
+    public class VsBitField : VectorRegisterBitField
     {
         public VsBitField() : base(5) { }
     }
-    public class VdBitField : ParameterBitField
+    public class VdBitField : VectorRegisterBitField
     {
         public VdBitField() : base(5) { }
     }
-    public class VtBitField : ParameterBitField
+    public class VtBitField : VectorRegisterBitField
     {
         public VtBitField() : base(5) { }
     }
-    public class ModBitField : ParameterBitField
+
+    // Co-Processor 0 Register Parameter BitField(s)
+    public class CP0RegisterBitField : RegisterBitField
     {
-        public ModBitField() : base(4) { }
+        public CP0RegisterBitField(int len) : base(len) { }
     }
-    public class OpBitField : ParameterBitField
+    public class CsBitField : CP0RegisterBitField
     {
-        public OpBitField() : base(5) { }
+        public CsBitField() : base(5) { }
     }
-    public class CoBitField : ParameterBitField
+
+    // Numeric Parameter BitFields
+    public class NumericBitField : ParameterBitField
     {
-        public CoBitField() : base(1) { }
+        public int MaximumValue { get; set; }
+        public int MinimumDigits { get; set; }
+        public NumericBitField(int len, int maxValue, int minDigits) : base(len)
+        {
+            MaximumValue = maxValue;
+            MinimumDigits = minDigits;
+        }
     }
-    public class EsBitField : ParameterBitField
+    public class OffsetBitField : NumericBitField
     {
-        public EsBitField() : base(2) { }
+        public OffsetBitField() : base(16, 0xFFFF, 8) { }
+    }
+    public class VOffsetBitField : NumericBitField
+    {
+        public VOffsetBitField() : base(6, 0x3F, 2) { }
+    }
+    public class AddressBitField : NumericBitField
+    {
+        public AddressBitField() : base(26, 0x3FFFFFF, 8) { }
+    }
+    public class ImmediateBitField : NumericBitField
+    {
+        public ImmediateBitField() : base(16, 0xFFFF, 4) { }
+    }
+    public class SaBitField : NumericBitField
+    {
+        public SaBitField() : base(5, 0x1F, 2) { }
+    }
+    public class Code10BitField : NumericBitField
+    {
+        public Code10BitField() : base(10, 0x3FF, 3) { }
+    }
+    public class Code20BitField : NumericBitField
+    {
+        public Code20BitField() : base(20, 0xFFFFF, 5) { }
+    }
+    public class ModBitField : NumericBitField
+    {
+        public ModBitField() : base(4, 0xF, 1) { }
+    }
+    public class OpBitField : NumericBitField
+    {
+        public OpBitField() : base(5, 0x1F, 2) { }
+    }
+    public class CoBitField : NumericBitField
+    {
+        public CoBitField() : base(1, 1, 1) { }
+    }
+    public class EsBitField : NumericBitField
+    {
+        public EsBitField() : base(2, 3, 1) { }
     }
 }

@@ -8,6 +8,6 @@ namespace N64RomEditor.src.MIPS3Codec
 {
     class Decoder
     {
-        
+
     }
 }
