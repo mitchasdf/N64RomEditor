@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace N64RomEditor.src.MIPS3Codec
 {
-    public class DecodedInstructionHelper
+    public class InstructionHelper
     {
-        public static List<DecodedInstructionHelper> Instructions { get; set; } = new List<DecodedInstructionHelper>();
+        public static List<InstructionHelper> Helpers { get; set; } = new List<InstructionHelper>();
         public static UnidentifiableInstruction Unidentifiable = new UnidentifiableInstruction();
         public string Name { get; set; } = "";
+        public string Descriptor { get; set; } = "";
         public int ListId { get; set; } = 0;
         public List<BitField> BitFields { get; set; } = new List<BitField>();
         public List<ParameterBitField> Appearance { get; set; } = new List<ParameterBitField>();
@@ -49,7 +50,7 @@ namespace N64RomEditor.src.MIPS3Codec
         private static string[] BitShifts = new string[9] {
             "DSLL", "DSLL32", "DSRA", "DSRA32", "DSRL", "DSRL32", "SLL", "SRA", "SRL"
         };
-        public DecodedInstructionHelper(string name, int listId, List<BitField> bitFields, List<ParameterBitField> appearance)
+        public InstructionHelper(string name, int listId, List<BitField> bitFields, List<ParameterBitField> appearance)
         {
             Name = name;
             ListId = listId;
@@ -66,13 +67,20 @@ namespace N64RomEditor.src.MIPS3Codec
             ContainsAddress = CheckIfPartOfGroup(name, ContainersOfAddresses);
             IsBitShift = CheckIfPartOfGroup(name, BitShifts);
 
-            Instructions.Add(this);
+            if (InstructionDescriptors.Descriptors.TryGetValue(name, out string result))
+                Descriptor = result;
+
+            Helpers.Add(this);
         }
         private bool CheckIfPartOfGroup(string name, string[] group) {
             return group.Count(member => name == member) > 0;
         }
+        public Instruction GetInstructionObject(int byteCode)
+        {
+            return new Instruction(this, byteCode);
+        }
     }
-    public class UnidentifiableInstruction : DecodedInstructionHelper
+    public class UnidentifiableInstruction : InstructionHelper
     {
         public UnidentifiableInstruction() : base("", -1, new List<BitField>(), new List<ParameterBitField>()) { }
     }

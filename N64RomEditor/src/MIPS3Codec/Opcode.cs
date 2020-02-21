@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
 
 namespace N64RomEditor.src.MIPS3Codec
 {
@@ -25,7 +24,7 @@ namespace N64RomEditor.src.MIPS3Codec
                         $"All items within the appearance list must also be within the bitFields list.\r\n" +
                         $"Failed [{invalidCount}/{appearance.Count}]");
             }
-            ListId = DecodedInstructionHelper.Instructions.Count;
+            ListId = InstructionHelper.Helpers.Count;
             Name = name;
             Matrix.Fit(this, bitFields, appearance);
         }

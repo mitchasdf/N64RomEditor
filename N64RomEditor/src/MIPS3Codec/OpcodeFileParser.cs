@@ -47,7 +47,8 @@ namespace N64RomEditor.src.MIPS3Codec
             List<Opcode> result = new List<Opcode>();
 
             if (!File.Exists(filePath))
-                throw new FileNotFoundException("The opcodes file cannot be found at the given path...");
+                throw new FileNotFoundException("The opcodes file cannot be found at the given path... \n" +
+                    "Make sure it is located in the same folder as the executable.");
 
             string[] lines = File.ReadAllLines(filePath);
             foreach (var line in lines)

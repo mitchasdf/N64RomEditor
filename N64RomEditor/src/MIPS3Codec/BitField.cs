@@ -52,6 +52,10 @@ namespace N64RomEditor.src.MIPS3Codec
     {
         public CondBitField(int identifier) : base(4, 1, identifier) { }
     }
+    public class CoBitField : IdentifierBitField
+    {
+        public CoBitField(int identifier) : base(1, 1, identifier) { }
+    }
     public class ZeroBitField : IdentifierBitField
     {
         public ZeroBitField(int len) : base(len, maximumPrecedenceSetting, 0) { }
@@ -194,10 +198,6 @@ namespace N64RomEditor.src.MIPS3Codec
     public class OpBitField : NumericBitField
     {
         public OpBitField() : base(5, 0x1F, 2) { }
-    }
-    public class CoBitField : NumericBitField
-    {
-        public CoBitField() : base(1, 1, 1) { }
     }
     public class EsBitField : NumericBitField
     {

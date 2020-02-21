@@ -55,12 +55,14 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\MIPS3Codec\BitField.cs" />
-    <Compile Include="src\MIPS3Codec\DecodedInstructionHelper.cs" />
-    <Compile Include="src\MIPS3Codec\Decoder.cs" />
+    <Compile Include="src\MIPS3Codec\InstructionHelper.cs" />
+    <Compile Include="src\MIPS3Codec\Descriptors.cs" />
+    <Compile Include="src\MIPS3Codec\Instruction.cs" />
     <Compile Include="src\MIPS3Codec\Matrix.cs" />
     <Compile Include="src\MIPS3Codec\Opcode.cs" />
     <Compile Include="src\MIPS3Codec\OpcodeFileParser.cs" />
     <Compile Include="src\MIPS3Codec\RegisterMap.cs" />
+    <Compile Include="src\MIPS3Codec\test.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
