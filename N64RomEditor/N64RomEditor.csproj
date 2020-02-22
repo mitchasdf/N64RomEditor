@@ -55,6 +55,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\MIPS3Codec\BitField.cs" />
+    <Compile Include="src\MIPS3Codec\MemoryRegionSettings.cs" />
     <Compile Include="src\MIPS3Codec\InstructionHelper.cs" />
     <Compile Include="src\MIPS3Codec\Descriptors.cs" />
     <Compile Include="src\MIPS3Codec\Instruction.cs" />

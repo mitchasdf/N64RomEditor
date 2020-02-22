@@ -10,6 +10,7 @@ namespace N64RomEditor.src.MIPS3Codec
     {
         public static List<InstructionHelper> Helpers { get; set; } = new List<InstructionHelper>();
         public static UnidentifiableInstruction Unidentifiable = new UnidentifiableInstruction();
+        public static Dictionary<string, int> NamesToIndices = new Dictionary<string, int>();
         public string Name { get; set; } = "";
         public string Descriptor { get; set; } = "";
         public int ListId { get; set; } = 0;
@@ -59,6 +60,8 @@ namespace N64RomEditor.src.MIPS3Codec
 
             if (GetType() == typeof(UnidentifiableInstruction)) return;
 
+            NamesToIndices.Add(name, listId);
+
             IsBranchLikely = CheckIfPartOfGroup(name, BranchLikelies);
             IsFloatBranch = CheckIfPartOfGroup(name, FloatBranches);
             IsLoadOrStore = CheckIfPartOfGroup(name, LoadOrStores);
@@ -75,13 +78,26 @@ namespace N64RomEditor.src.MIPS3Codec
         private bool CheckIfPartOfGroup(string name, string[] group) {
             return group.Count(member => name == member) > 0;
         }
-        public Instruction GetInstructionObject(int byteCode)
+        public Instruction GetNewInstructionObject(int byteCode, int index)
         {
-            return new Instruction(this, byteCode);
+            return new Instruction(this, byteCode, index);
+        }
+        public static bool InstructionExists(string name)
+        {
+            return NamesToIndices.ContainsKey(name);
+        }
+        public static InstructionHelper GetHelperByName(string name)
+        {
+            if(NamesToIndices.TryGetValue(name, out int value))
+            {
+                return Helpers[value];
+            }
+            return new UnidentifiableInstruction(name);
         }
     }
     public class UnidentifiableInstruction : InstructionHelper
     {
         public UnidentifiableInstruction() : base("", -1, new List<BitField>(), new List<ParameterBitField>()) { }
+        public UnidentifiableInstruction(string name) : base(name, -1, new List<BitField>(), new List<ParameterBitField>()) { }
     }
 }
